@@ -322,9 +322,8 @@ def aws_host(resource, module_name):
                                              'vpc_security_group_ids'),
         # ansible-specific
         'ansible_ssh_port': 22,
-        'ansible_ssh_host': raw_attrs['public_ip'],
         # generic
-        'public_ipv4': raw_attrs['public_ip'],
+        'public_ipv4': raw_attrs.get('public_ip', raw_attrs['private_ip']),
         'private_ipv4': raw_attrs['private_ip'],
         'provider': 'aws',
     }
@@ -332,6 +331,8 @@ def aws_host(resource, module_name):
     # attrs specific to Ansible
     if 'tags.sshUser' in raw_attrs:
         attrs['ansible_ssh_user'] = raw_attrs['tags.sshUser']
+
+    attrs['ansible_ssh_host'] = attrs['public_ipv4']
 
     # attrs specific to Mantl
     attrs.update({
